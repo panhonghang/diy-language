@@ -1,15 +1,15 @@
 "use strict";
-exports.__esModule = true;
-var token_1 = require("./token");
-var ast_1 = require("./ast");
-var Parser = /** @class */ (function () {
-    function Parser(tokenizer) {
+Object.defineProperty(exports, "__esModule", { value: true });
+const token_1 = require("./token");
+const ast_1 = require("./ast");
+class Parser {
+    constructor(tokenizer) {
         this.tokenizer = tokenizer;
     }
     // 解析 Program 
     // program = (functionDecl | functionCall)* ;
-    Parser.prototype.parseProgram = function () {
-        var statementsArr = [], statement = null;
+    parseProgram() {
+        let statementsArr = [], statement = null;
         while (true) {
             // 判断是否是函数声明
             statement = this.parseFunctionDeclare();
@@ -27,12 +27,12 @@ var Parser = /** @class */ (function () {
             break;
         }
         return new ast_1.Program(statementsArr);
-    };
+    }
     // 解析 function 声明
-    Parser.prototype.parseFunctionDeclare = function () {
-        var oldPosition = this.tokenizer.getPosition();
+    parseFunctionDeclare() {
+        let oldPosition = this.tokenizer.getPosition();
         if (this.tokenizer.next().text === 'function') {
-            var functionName = this.tokenizer.next();
+            let functionName = this.tokenizer.next();
             // 判断函数名
             if (functionName.kind === token_1.TokenKind.Identifier) {
                 // 判断分隔符 (
@@ -40,7 +40,7 @@ var Parser = /** @class */ (function () {
                 if (this.tokenizer.next().text === '(') {
                     // 判断分隔符 )
                     if (this.tokenizer.next().text === ')') {
-                        var functionBody = this.parseFunctionBody();
+                        let functionBody = this.parseFunctionBody();
                         if (functionBody !== null) {
                             return new ast_1.FunctionDeclare(functionName.text, functionBody);
                         }
@@ -51,13 +51,13 @@ var Parser = /** @class */ (function () {
         // 如果解析不成功，回退并且返回 null。
         this.tokenizer.traceBack(oldPosition);
         return null;
-    };
+    }
     // 解析 function 内容
-    Parser.prototype.parseFunctionBody = function () {
-        var oldPosition = this.tokenizer.getPosition(), statementsArr = [];
+    parseFunctionBody() {
+        let oldPosition = this.tokenizer.getPosition(), statementsArr = [];
         // TODO 只支持调用内部函数
         if (this.tokenizer.next().text === '{') {
-            var functionCall = this.parseFunctionCall();
+            let functionCall = this.parseFunctionCall();
             // 解析函数体
             while (functionCall !== null) {
                 statementsArr.push(functionCall);
@@ -71,13 +71,13 @@ var Parser = /** @class */ (function () {
         //如果解析不成功，回溯，返回null。
         this.tokenizer.traceBack(oldPosition);
         return null;
-    };
+    }
     // 解析 function 调用
-    Parser.prototype.parseFunctionCall = function () {
-        var oldPosition = this.tokenizer.getPosition(), paramsArr = [], functionName = this.tokenizer.next();
+    parseFunctionCall() {
+        let oldPosition = this.tokenizer.getPosition(), paramsArr = [], functionName = this.tokenizer.next();
         if (functionName.kind === token_1.TokenKind.Identifier) {
             if (this.tokenizer.next().text === '(') {
-                var param = this.tokenizer.next();
+                let param = this.tokenizer.next();
                 // 读取参数
                 while (param.text !== ')') {
                     if (param.kind === token_1.TokenKind.StringLiteral) {
@@ -108,36 +108,56 @@ var Parser = /** @class */ (function () {
                 }
             }
         }
-        //如果解析不成功，回溯，返回null。
+        // 如果解析不成功，回溯，返回null。
         this.tokenizer.traceBack(oldPosition);
         return null;
-    };
-    return Parser;
-}());
-var RefResolver = /** @class */ (function () {
-    function RefResolver() {
     }
-    return RefResolver;
-}());
-var Interpreter = /** @class */ (function () {
-    function Interpreter() {
+}
+class RefResolver {
+    constructor() {
+        this.program = null;
     }
-    return Interpreter;
-}());
+    visitProgram(prog) {
+        console.log(prog);
+        this.program = prog;
+        for (let x of prog.statements) {
+            let functionCall = x;
+            // 
+            if (typeof functionCall.parameters === 'object') {
+            }
+            else {
+            }
+        }
+    }
+    ;
+    visitFunctionBody() {
+    }
+    ;
+    resolveFunctionCall() {
+    }
+    ;
+    findFunctionDeclare() {
+    }
+    ;
+}
+class Interpreter {
+}
 // 入口程序
-var main = function () {
+const main = () => {
     // 词法分析
-    var tokenizer = new token_1.Tokenizer(token_1.tokenArray);
+    const tokenizer = new token_1.Tokenizer(token_1.tokenArray);
     console.log('\n程序所使用的Token:');
-    for (var _i = 0, tokenArray_1 = token_1.tokenArray; _i < tokenArray_1.length; _i++) {
-        var token = tokenArray_1[_i];
+    for (let token of token_1.tokenArray) {
         console.log(token);
     }
     // 语法分析
-    var program = new Parser(tokenizer).parseProgram();
-    console.log('\n%c语法分析后的AST:', 'color:#0f0;');
+    let program = new Parser(tokenizer).parseProgram();
+    console.log('\n语法分析后的AST:');
     program.dump('');
     // 语义分析
+    new RefResolver().visitProgram(program);
+    // console.log("\n语义分析后的AST:");
+    // program.dump("");
     // 程序运行
 };
 // 运行实例

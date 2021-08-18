@@ -13,7 +13,23 @@ import {
 } from './ast';
 
 type nullOrVoid = null | void;
-
+abstract class AstVisitor{
+    visitProg(prog: Program) { 
+    }
+    visitFunctionDecl(node: FunctionDeclare) {
+        return this.visitFunctionBody(node.body);
+    }
+    visitFunctionBody(node: FunctionBody) {
+        let retVal;
+        for(let x of node.statement){
+            retVal = this.visitFunctionCall(x);
+        }
+        return retVal;
+    }
+    visitFunctionCall(node: FunctionCall) {
+        return undefined;
+    }
+}
 class Parser {
     private tokenizer: Tokenizer;
     constructor(tokenizer: Tokenizer) {
@@ -127,8 +143,28 @@ class Parser {
         return null;
     }
 }
-class RefResolver {
-    
+class RefResolver extends AstVisitor {
+    private program: Program | null = null;
+    visitProgram(prog: Program): void {
+        this.program = prog;
+        for (let x of prog.statements) {
+            // 判断节点是 FunctionCall 还是 FunctionDeclare
+            if (typeof x?.parameters === 'object') {
+                this.resolveFunctionCall(x as FunctionCall);
+            } else {
+                this.visitFunctionDeclare(x as FunctionDeclare);
+            }
+        }
+    };
+    private resolveFunctionCall(node: FunctionCall) {
+
+    };
+    private findFunctionDeclare() {
+
+    };
+    private visitFunctionDeclare(node: FunctionDeclare) {
+
+    }
 }
 class Interpreter {
 
@@ -143,10 +179,12 @@ const main = () => {
     }
     // 语法分析
     let program: Program = new Parser(tokenizer).parseProgram();
-    console.log('\n%c语法分析后的AST:', 'color:#0f0;');
+    console.log('\n语法分析后的AST:');
     program.dump('');
     // 语义分析
-
+    new RefResolver().visitProgram(program);
+    // console.log("\n语义分析后的AST:");
+    // program.dump("");
     // 程序运行
 
 }

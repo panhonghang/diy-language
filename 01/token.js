@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tokenizer = exports.tokenArray = exports.TokenKind = void 0;
 //Token的类型
 var TokenKind;
@@ -35,22 +35,21 @@ exports.tokenArray = [
     { kind: TokenKind.Separator, text: ';' },
     { kind: TokenKind.EOF, text: '' }
 ];
-var Tokenizer = /** @class */ (function () {
-    function Tokenizer(tokens) {
+class Tokenizer {
+    constructor(tokens) {
         this.tokens = tokens;
         this.position = 0;
     }
-    Tokenizer.prototype.getPosition = function () {
+    getPosition() {
         return this.position;
-    };
-    Tokenizer.prototype.next = function () {
+    }
+    next() {
         // 数组越界直接返回最后一个
         return this.tokens[this.position++] ||
             this.tokens[this.tokens.length - 1];
-    };
-    Tokenizer.prototype.traceBack = function (oldPosition) {
+    }
+    traceBack(oldPosition) {
         this.position = oldPosition;
-    };
-    return Tokenizer;
-}());
+    }
+}
 exports.Tokenizer = Tokenizer;

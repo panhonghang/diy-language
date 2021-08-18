@@ -5,10 +5,14 @@ abstract class AstNode {
 }
 // 语句节点
 export abstract class Statement extends AstNode {
+    public name?: string;
+    public body?: FunctionBody;
+    public parameters?: string[];
+    public statement?: FunctionCall[];
 }
 // 程序节点
 export class Program extends AstNode {
-    private statements: Statement[];
+    public statements: Statement[];
     constructor(statements: Statement[]) {
         super();
         this.statements = statements;
@@ -20,8 +24,8 @@ export class Program extends AstNode {
 }
 // 函数声明节点
 export class FunctionDeclare extends Statement {
-    private name: string;
-    private body: FunctionBody;
+    public name: string;
+    public body: FunctionBody;
     constructor(name: string, body: FunctionBody) {
         super();
         this.name = name;
@@ -34,7 +38,7 @@ export class FunctionDeclare extends Statement {
 }
 // 函数体节点
 export class FunctionBody extends Statement {
-    private statement: FunctionCall[];
+    public statement: FunctionCall[];
     constructor(statement: FunctionCall[]) {
         super();
         this.statement = statement;
@@ -47,8 +51,8 @@ export class FunctionBody extends Statement {
 
 // 函数调用节点
 export class FunctionCall extends Statement {
-    private name: string;
-    private parameters: string[];
+    public name: string;
+    public parameters: string[];
     private declare: FunctionDeclare | null = null;
     constructor(name: string, parameters: string[]) {
         super();
